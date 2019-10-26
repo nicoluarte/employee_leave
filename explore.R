@@ -16,7 +16,7 @@ prop.table(table(balancedData$Attrition))
 
 ## check factor linear correlations
 subSet <- dplyr::select(data, PercentSalaryHike, WorkLifeBalance, JobInvolvement,
-                        EnvironmentSatisfaction)
+                        EnvironmentSatisfaction, Age)
 subSet <- as.numeric(subSet)
 M <- cor(subSet)
 corrplot::corrplot(M, type = "upper", order = "hclust",
@@ -89,3 +89,51 @@ p3 <- ggplot(logisticQI2, aes(JobInvolvement, qi_median)) +
     scale_y_continuous(breaks = seq(0, 1, 0.1)) +
     coord_cartesian(ylim = c(0, 1))
 grid.arrange(p1, p2, p3, nrow = 1)
+
+## visualization
+
+att <- ggplot(data, aes(WorkLifeBalance)) + geom_bar()
+att + labs(x = "Work-life balance", y = "Frecuencia") + theme_minimal()
+ggsave(filename = "/home/nicoluarte/employee_leave/worklife.png",
+       plot = last_plot(), dpi = 300)
+
+att <- ggplot(data, aes(WorkLifeBalance)) + geom_bar()
+att + labs(x = "Work-life balance", y = "Frecuencia") + theme_minimal()
+ggsave("image.png", dpi=600)
+
+table1 <- table(data$Attrition, data$WorkLifeBalance)
+dfTable <- as.data.frame(table(table1))
+dev.off()
+plot(data$Attrition ~ as.factor(data$WorkLifeBalance), pch = 15)
+
+ggplot(data, aes(x = WorkLifeBalance, y = Attrition)) +
+    geom_jitter(position=position_jitter(0.1), cex=1.2, aes(colour = Attrition), shape = 17) +
+    labs(color = "Rotación")
+                                        # ggsave("wlb.png", dpi=600)
+
+ggplot(data, aes(x = WorkLifeBalance, fill = Attrition)) +
+    geom_bar(position = "fill") +
+    scale_fill_discrete(name="Rotación",
+                        labels=c("No", "Sí")) +
+    labs(y = "Porcentaje")
+ggsave("wlb.png", dpi = 600)
+
+ggplot(data, aes(x = JobInvolvement, fill = Attrition)) +
+    geom_bar(position = "fill") +
+    scale_fill_discrete(name="Rotación",
+                        labels=c("No", "Sí")) +
+    labs(y = "Porcentaje")
+ggsave("jobinvolvement.png", dpi = 600)
+
+table1
+prop.table(table1, margin = 1)
+
+
+colnames(data)
+test <- data %>% dplyr::select(Age, Attrition, JobInvolvement)
+
+plot(test$Attrition ~ test$Age)
+
+ggplot(data, aes(x = Age, fill = Attrition)) +
+    geom_area(stat = "bin") + facet_grid(Attrition ~ EnvironmentSatisfaction)
+
